@@ -1,0 +1,636 @@
+/* src/pages/public/passion/passion.css */
+.passion-page {
+  --p-bg: #fff1f1;
+  --p-surface: #ffffff;
+  --p-text: #0a0a0a;
+  --p-sub: #6b6b6b;
+  --p-border: #dc2626;
+  --p-line-color: #dc2626;
+  --p-shadow-tint: rgba(220, 38, 38, 0.25);
+  --p-shadow-tint-strong: rgba(220, 38, 38, 0.4);
+  --p-void-color: rgba(255, 255, 255, 0.55);
+  --p-void-tint: rgba(255, 255, 255, 0.16);
+  --p-font-heading: 'Archivo Black', sans-serif;
+  --p-font-body: 'Inter', sans-serif;
+  position: relative;
+  color: var(--p-text);
+  font-family: var(--p-font-body);
+  background: var(--p-bg);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+[data-theme='dark'] .passion-page {
+  --p-bg: #160a0a;
+  --p-surface: #1c0e0e;
+  --p-text: #ffffff;
+  --p-sub: #b0b0b0;
+  --p-border: #ef4444;
+  --p-line-color: #ef4444;
+  --p-shadow-tint: rgba(239, 68, 68, 0.25);
+  --p-shadow-tint-strong: rgba(239, 68, 68, 0.4);
+  --p-void-color: rgba(0, 0, 0, 0.6);
+  --p-void-tint: rgba(0, 0, 0, 0.22);
+}
+.passion-page h1,
+.passion-page h2,
+.passion-page h3 {
+  font-family: var(--p-font-heading);
+  margin: 0;
+}
+.passion-page--fixed {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+body.passion-fixed-lock {
+  overflow: hidden;
+}
+.passion-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at center, var(--p-void-tint) 0%, transparent 60%);
+}
+.passion-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+/* ---------- Tunnel background ---------- */
+.passion-wave-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.passion-wave-bg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.passion-tunnel__portal {
+  fill: var(--p-void-color);
+}
+/* ---------- Dust particles ---------- */
+.passion-dust__group {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+}
+.passion-dust__dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--p-line-color);
+  opacity: var(--dust-op-min);
+  animation: passionDustIdle var(--dust-dur, 10s) ease-in-out var(--dust-delay, 0s) infinite alternate,
+    passionDustTwinkle var(--dust-twinkle-dur, 3s) ease-in-out var(--dust-twinkle-delay, 0s) infinite alternate;
+}
+@keyframes passionDustIdle {
+  from {
+    transform: translate(-50%, -50%) translate(0, 0);
+  }
+  to {
+    transform: translate(-50%, -50%) translate(var(--dust-dx, 6px), var(--dust-dy, 6px));
+  }
+}
+@keyframes passionDustTwinkle {
+  from {
+    opacity: var(--dust-op-min);
+  }
+  to {
+    opacity: var(--dust-op-max);
+  }
+}
+.passion-dust__group--rush-fwd {
+  animation: passionDustRushFwd 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+.passion-dust__group--rush-back {
+  animation: passionDustRushBack 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+.passion-dust__group--settle-fwd {
+  animation: passionDustSettleFwd 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.passion-dust__group--settle-back {
+  animation: passionDustSettleBack 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes passionDustRushFwd {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@keyframes passionDustRushBack {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+@keyframes passionDustSettleFwd {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes passionDustSettleBack {
+  from {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+/* ---------- Section panels — sequential crash-out / arrive-in ---------- */
+.passion-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 64px 96px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+.passion-panel--idle {
+  opacity: 1;
+  transform: scale(1);
+}
+.passion-panel--exiting {
+  z-index: 2;
+  animation: passionCrashOut 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+.passion-panel--entering {
+  z-index: 2;
+  animation: passionArriveIn 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.passion-panel--fill {
+  align-items: stretch;
+}
+@keyframes passionCrashOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(2.4);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(4.2);
+    filter: blur(2px);
+  }
+}
+@keyframes passionArriveIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.08);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* ---------- Content box system ("kotak tegas merah") ---------- */
+.passion-box {
+  --r: 0deg;
+  position: relative;
+  background: var(--p-surface);
+  border: 3px solid var(--p-border);
+  box-shadow: 6px 6px 0px var(--p-shadow-tint);
+  padding: 24px;
+  transform: rotate(var(--r));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.passion-box:hover {
+  transform: rotate(calc(var(--r) + 1.5deg)) translateY(-6px);
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(0, 0, 0, 0.15);
+}
+[data-theme='dark'] .passion-box:hover {
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(255, 255, 255, 0.15);
+}
+.passion-box--hero {
+  --r: -1deg;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 780px;
+  width: 100%;
+  padding: 48px;
+}
+.passion-hero__img,
+.passion-image-fallback {
+  width: 140px;
+  height: 140px;
+  border: 3px solid var(--p-border);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.passion-image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: var(--p-bg);
+  color: var(--p-border);
+}
+.passion-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.passion-hero__greeting {
+  font-size: 30px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.passion-hero__subtitle {
+  font-family: var(--p-font-body);
+  font-size: 14px;
+  color: var(--p-sub);
+  margin: 0;
+}
+.passion-hero__quote {
+  font-family: var(--p-font-body);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--p-sub);
+  margin: 0;
+}
+.passion-box--placeholder {
+  --r: 1deg;
+  max-width: 560px;
+  text-align: center;
+}
+.passion-section__title {
+  font-size: 18px;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.passion-section__note {
+  font-family: var(--p-font-body);
+  font-size: 13px;
+  color: var(--p-sub);
+  margin: 0;
+}
+/* ---------- Scrollable section shell (Leadership / Creative Works / Gallery) ---------- */
+.passion-section-shell {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+.passion-section-shell__header {
+  --r: 0deg;
+  flex: 0 0 auto;
+  text-align: center;
+}
+.passion-scroll-v {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 8px 4px 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-border) transparent;
+}
+.passion-scroll-v::-webkit-scrollbar {
+  width: 6px;
+}
+.passion-scroll-v::-webkit-scrollbar-track {
+  background: transparent;
+}
+.passion-scroll-v::-webkit-scrollbar-thumb {
+  background: var(--p-border);
+}
+.passion-scroll-h {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 4px 16px;
+  scrollbar-width: none;
+}
+.passion-scroll-h::-webkit-scrollbar {
+  display: none;
+}
+/* Leadership card */
+.passion-leadership-card {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.passion-leadership-card:last-child {
+  margin-bottom: 0;
+}
+.passion-leadership-card__icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--p-border);
+  background: var(--p-bg);
+  color: var(--p-border);
+}
+.passion-leadership-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+.passion-leadership-card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.passion-leadership-card__heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.passion-leadership-card__org {
+  font-size: 15px;
+}
+.passion-leadership-card__role {
+  font-family: var(--p-font-body);
+  font-size: 13px;
+  color: var(--p-sub);
+  margin-top: 2px;
+}
+.passion-leadership-card__period {
+  font-family: var(--p-font-body);
+  font-size: 11px;
+  color: var(--p-sub);
+  font-style: italic;
+  white-space: nowrap;
+}
+.passion-leadership-card__desc {
+  font-family: var(--p-font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--p-sub);
+  margin: 10px 0 0;
+}
+.passion-leadership-card__achievements {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.passion-leadership-card__achievements li {
+  font-family: var(--p-font-body);
+  font-size: 12px;
+  color: var(--p-text);
+  position: relative;
+  padding-left: 16px;
+}
+.passion-leadership-card__achievements li::before {
+  content: '▪';
+  color: var(--p-border);
+  position: absolute;
+  left: 0;
+}
+/* Category tabs */
+.passion-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.passion-tab {
+  font-family: var(--p-font-heading);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 14px;
+  border: 2px solid var(--p-border);
+  background: transparent;
+  color: var(--p-text);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.passion-tab--active,
+.passion-tab:hover {
+  background: var(--p-border);
+  color: #ffffff;
+}
+/* Creative work card */
+.passion-creative-card {
+  flex: 0 0 240px;
+  display: flex;
+  flex-direction: column;
+}
+.passion-creative-card__img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 2px solid var(--p-border);
+  display: block;
+  margin-bottom: 10px;
+}
+.passion-image-fallback.passion-creative-card__img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--p-font-heading);
+  font-size: 28px;
+  background: var(--p-bg);
+  color: var(--p-border);
+}
+.passion-creative-card__title {
+  font-size: 14px;
+}
+.passion-creative-card__year {
+  font-family: var(--p-font-body);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--p-sub);
+  margin-left: 6px;
+}
+.passion-creative-card__desc {
+  font-family: var(--p-font-body);
+  font-size: 12px;
+  color: var(--p-sub);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+.passion-creative-card__link {
+  font-family: var(--p-font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-border);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  margin-top: 10px;
+}
+/* Gallery card */
+.passion-gallery-card {
+  flex: 0 0 260px;
+}
+.passion-gallery-card__img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: 2px solid var(--p-border);
+  display: block;
+}
+.passion-image-fallback.passion-gallery-card__img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--p-font-heading);
+  font-size: 28px;
+  background: var(--p-bg);
+  color: var(--p-border);
+}
+.passion-gallery-card__caption {
+  font-family: var(--p-font-body);
+  font-size: 12px;
+  margin-top: 8px;
+}
+.passion-gallery-card__context {
+  font-family: var(--p-font-body);
+  font-size: 11px;
+  color: var(--p-sub);
+  font-style: italic;
+}
+/* ---------- Contact panel (reuses footer-passion) ---------- */
+.passion-contact-panel.footer-passion {
+  border-top: none;
+  border-bottom: none;
+  margin-top: 0;
+  max-width: 900px;
+  width: 100%;
+}
+/* ---------- Floating bottom nav ---------- */
+.passion-floating-nav {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--p-surface);
+  border: 3px solid var(--p-border);
+  box-shadow: 5px 5px 0px var(--p-shadow-tint);
+  padding: 8px 12px;
+}
+.passion-floating-nav__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: var(--p-border);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.passion-floating-nav__arrow svg {
+  width: 30px;
+  height: 30px;
+}
+.passion-floating-nav__arrow:hover:not(:disabled) {
+  background: var(--p-bg);
+  transform: scale(1.06);
+}
+.passion-floating-nav__arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.passion-floating-nav__label {
+  min-width: 120px;
+  text-align: center;
+  font-family: var(--p-font-heading);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 8px;
+}
+@media (max-width: 640px) {
+  .passion-panel {
+    padding: 20px 20px 96px;
+  }
+  .passion-box--hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 20px;
+  }
+  .passion-hero__text {
+    align-items: center;
+  }
+  .passion-hero__greeting {
+    font-size: 22px;
+  }
+  .passion-floating-nav {
+    gap: 6px;
+    padding: 6px 8px;
+    bottom: 20px;
+  }
+  .passion-floating-nav__arrow {
+    width: 48px;
+    height: 48px;
+  }
+  .passion-floating-nav__arrow svg {
+    width: 22px;
+    height: 22px;
+  }
+  .passion-floating-nav__label {
+    min-width: 90px;
+    font-size: 11px;
+  }
+  .passion-creative-card,
+  .passion-gallery-card {
+    flex-basis: 200px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .passion-panel--exiting,
+  .passion-panel--entering,
+  .passion-dust__group--rush-fwd,
+  .passion-dust__group--rush-back,
+  .passion-dust__group--settle-fwd,
+  .passion-dust__group--settle-back,
+  .passion-dust__dot {
+    animation: none;
+  }
+  .passion-box {
+    transition: none;
+  }
+}
