@@ -1,3 +1,4 @@
+// src/components/admin/modals/ExperienceModal.tsx
 import { useEffect, useState } from 'react'
 import { Modal } from '@/components/admin/Modal'
 import { FormInput } from '@/components/admin/FormInput'
@@ -5,7 +6,6 @@ import { ImageUpload } from '@/components/admin/ImageUpload'
 import { ToggleSwitch } from '@/components/common/ToggleSwitch'
 import { Button } from '@/components/common/Button'
 import type { Experience } from '@/types'
-
 interface ExperienceModalProps {
   isOpen: boolean
   onClose: () => void
@@ -13,7 +13,6 @@ interface ExperienceModalProps {
   onCreate: (payload: Partial<Experience>) => Promise<unknown>
   onUpdate: (id: string, payload: Partial<Experience>) => Promise<unknown>
 }
-
 const emptyForm = {
   company: '',
   position: '',
@@ -24,16 +23,15 @@ const emptyForm = {
   description: '',
   institution_details: '',
   logo_url: '',
+  image_url: '',
   position_order: '0',
   is_visible: true,
 }
-
 export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpdate }: ExperienceModalProps) {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-
   useEffect(() => {
     if (!isOpen) return
     if (initialData) {
@@ -47,6 +45,7 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
         description: initialData.description || '',
         institution_details: initialData.institution_details || '',
         logo_url: initialData.logo_url || '',
+        image_url: initialData.image_url || '',
         position_order: initialData.position_order?.toString() || '0',
         is_visible: initialData.is_visible,
       })
@@ -56,7 +55,6 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
     setErrors({})
     setSubmitError(null)
   }, [isOpen, initialData])
-
   const validate = () => {
     const next: Record<string, string> = {}
     if (!form.company.trim()) next.company = 'Company is required.'
@@ -64,7 +62,6 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
     setErrors(next)
     return Object.keys(next).length === 0
   }
-
   const handleSubmit = async () => {
     if (!validate()) return
     setSaving(true)
@@ -80,6 +77,7 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
         description: form.description.trim() || null,
         institution_details: form.institution_details.trim() || null,
         logo_url: form.logo_url.trim() || null,
+        image_url: form.image_url.trim() || null,
         position_order: Number(form.position_order) || 0,
         is_visible: form.is_visible,
       }
@@ -95,7 +93,6 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
       setSaving(false)
     }
   }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -177,10 +174,16 @@ export function ExperienceModal({ isOpen, onClose, initialData, onCreate, onUpda
         onChange={(v) => setForm((f) => ({ ...f, institution_details: v }))}
       />
       <ImageUpload
-        label="Institution / company logo"
+        label="Company logo"
         section="identity"
         currentImage={form.logo_url || null}
         onUpload={(url) => setForm((f) => ({ ...f, logo_url: url }))}
+      />
+      <ImageUpload
+        label="Company photo"
+        section="identity"
+        currentImage={form.image_url || null}
+        onUpload={(url) => setForm((f) => ({ ...f, image_url: url }))}
       />
       <FormInput
         label="Sort order"

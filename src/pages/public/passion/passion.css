@@ -46,6 +46,47 @@
 body.passion-fixed-lock {
   overflow: hidden;
 }
+@keyframes passionVoidShake {
+  0% {
+    transform: translate(0, 0);
+  }
+  6% {
+    transform: translate(9px, -7px) rotate(0.4deg);
+  }
+  12% {
+    transform: translate(-11px, 6px) rotate(-0.5deg);
+  }
+  18% {
+    transform: translate(10px, 8px) rotate(0.35deg);
+  }
+  24% {
+    transform: translate(-8px, -9px) rotate(-0.4deg);
+  }
+  32% {
+    transform: translate(7px, 5px) rotate(0.25deg);
+  }
+  40% {
+    transform: translate(-6px, -4px) rotate(-0.2deg);
+  }
+  50% {
+    transform: translate(5px, 3px) rotate(0.15deg);
+  }
+  60% {
+    transform: translate(-4px, -2px) rotate(-0.12deg);
+  }
+  72% {
+    transform: translate(3px, 1.5px);
+  }
+  85% {
+    transform: translate(-1.5px, 0.8px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+.passion-page--shaking {
+  animation: passionVoidShake 900ms ease-out;
+}
 .passion-viewport {
   position: relative;
   flex: 1 1 auto;
@@ -53,12 +94,19 @@ body.passion-fixed-lock {
   overflow: hidden;
   background: radial-gradient(circle at center, var(--p-void-tint) 0%, transparent 60%);
 }
+.passion-bg-fade {
+  position: absolute;
+  inset: 0;
+  transition: opacity 320ms ease;
+}
+.passion-bg-fade--dim {
+  opacity: 0.15;
+}
 .passion-stage {
   position: relative;
   width: 100%;
   height: 100%;
 }
-/* ---------- Tunnel background ---------- */
 .passion-wave-bg {
   position: absolute;
   inset: 0;
@@ -73,7 +121,6 @@ body.passion-fixed-lock {
 .passion-tunnel__portal {
   fill: var(--p-void-color);
 }
-/* ---------- Dust particles ---------- */
 .passion-dust__group {
   position: absolute;
   inset: 0;
@@ -157,14 +204,13 @@ body.passion-fixed-lock {
     opacity: 1;
   }
 }
-/* ---------- Section panels — sequential crash-out / arrive-in ---------- */
 .passion-panel {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 64px 96px;
+  padding: 32px 64px 84px;
   box-sizing: border-box;
   z-index: 1;
 }
@@ -172,18 +218,26 @@ body.passion-fixed-lock {
   opacity: 1;
   transform: scale(1);
 }
-.passion-panel--exiting {
+.passion-panel--exiting-fwd {
   z-index: 2;
-  animation: passionCrashOut 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+  animation: passionCrashOutFwd 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
 }
-.passion-panel--entering {
+.passion-panel--exiting-back {
   z-index: 2;
-  animation: passionArriveIn 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: passionCrashOutBack 480ms cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+.passion-panel--entering-fwd {
+  z-index: 2;
+  animation: passionArriveInFwd 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.passion-panel--entering-back {
+  z-index: 2;
+  animation: passionArriveInBack 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .passion-panel--fill {
   align-items: stretch;
 }
-@keyframes passionCrashOut {
+@keyframes passionCrashOutFwd {
   0% {
     opacity: 1;
     transform: scale(1);
@@ -200,7 +254,7 @@ body.passion-fixed-lock {
     filter: blur(2px);
   }
 }
-@keyframes passionArriveIn {
+@keyframes passionArriveInFwd {
   0% {
     opacity: 0;
     transform: scale(0.08);
@@ -213,7 +267,77 @@ body.passion-fixed-lock {
     transform: scale(1);
   }
 }
-/* ---------- Content box system ("kotak tegas merah") ---------- */
+@keyframes passionCrashOutBack {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(0.4);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.08);
+    filter: blur(2px);
+  }
+}
+@keyframes passionArriveInBack {
+  0% {
+    opacity: 0;
+    transform: scale(4.2);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+  }
+}
+.passion-panel.passion-scatter-active .passion-scatterable {
+  transition: transform 380ms cubic-bezier(0.55, 0, 1, 0.45), opacity 320ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+1) {
+  transform: translate(-170%, -55%) rotate(-34deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+2) {
+  transform: translate(160%, -75%) rotate(29deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+3) {
+  transform: translate(-130%, 85%) rotate(38deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+4) {
+  transform: translate(150%, 95%) rotate(-26deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+5) {
+  transform: translate(-190%, 15%) rotate(20deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+6) {
+  transform: translate(175%, -5%) rotate(-40deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n+7) {
+  transform: translate(-95%, -105%) rotate(32deg);
+}
+.passion-scatter-active .passion-scatterable:nth-of-type(8n) {
+  transform: translate(100%, 110%) rotate(-18deg);
+}
+.passion-hero-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
 .passion-box {
   --r: 0deg;
   position: relative;
@@ -232,7 +356,6 @@ body.passion-fixed-lock {
   box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(255, 255, 255, 0.15);
 }
 .passion-box--hero {
-  --r: -1deg;
   display: flex;
   align-items: center;
   gap: 40px;
@@ -279,11 +402,6 @@ body.passion-fixed-lock {
   color: var(--p-sub);
   margin: 0;
 }
-.passion-box--placeholder {
-  --r: 1deg;
-  max-width: 560px;
-  text-align: center;
-}
 .passion-section__title {
   font-size: 18px;
   text-transform: uppercase;
@@ -295,19 +413,19 @@ body.passion-fixed-lock {
   color: var(--p-sub);
   margin: 0;
 }
-/* ---------- Scrollable section shell (Leadership / Creative Works / Gallery) ---------- */
+/* ---------- Scrollable section shell — full width, header shrinks to fit ---------- */
 .passion-section-shell {
   width: 100%;
-  max-width: 900px;
   height: 100%;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-height: 0;
 }
 .passion-section-shell__header {
-  --r: 0deg;
+  align-self: center;
+  width: auto;
+  max-width: 90%;
   flex: 0 0 auto;
   text-align: center;
 }
@@ -343,86 +461,122 @@ body.passion-fixed-lock {
 .passion-scroll-h::-webkit-scrollbar {
   display: none;
 }
-/* Leadership card */
-.passion-leadership-card {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  margin-bottom: 20px;
+.passion-scroll-h--bleed {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  padding-left: 24px;
+  padding-right: 24px;
 }
-.passion-leadership-card:last-child {
-  margin-bottom: 0;
+.passion-scroll-h--draggable {
+  cursor: grab;
+  touch-action: pan-x;
+  scroll-behavior: auto;
 }
-.passion-leadership-card__icon {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid var(--p-border);
-  background: var(--p-bg);
-  color: var(--p-border);
+.passion-scroll-h--draggable.passion-scroll-h--dragging {
+  cursor: grabbing;
+  user-select: none;
 }
-.passion-leadership-card__icon svg {
-  width: 22px;
-  height: 22px;
+.passion-scroll-h--draggable.passion-scroll-h--dragging * {
+  pointer-events: none;
 }
-.passion-leadership-card__body {
+/* ---------- Gallery — two independently auto-scrolling rows ---------- */
+.passion-gallery-rows {
   flex: 1 1 auto;
-  min-width: 0;
-}
-.passion-leadership-card__heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.passion-leadership-card__org {
-  font-size: 15px;
-}
-.passion-leadership-card__role {
-  font-family: var(--p-font-body);
-  font-size: 13px;
-  color: var(--p-sub);
-  margin-top: 2px;
-}
-.passion-leadership-card__period {
-  font-family: var(--p-font-body);
-  font-size: 11px;
-  color: var(--p-sub);
-  font-style: italic;
-  white-space: nowrap;
-}
-.passion-leadership-card__desc {
-  font-family: var(--p-font-body);
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--p-sub);
-  margin: 10px 0 0;
-}
-.passion-leadership-card__achievements {
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
-.passion-leadership-card__achievements li {
-  font-family: var(--p-font-body);
-  font-size: 12px;
-  color: var(--p-text);
+.passion-gallery-row {
+  flex: 1 1 0;
+  min-height: 0;
+}
+/* ---------- Leadership card — matting border + torn top/bottom edges ---------- */
+/* Leadership card — flat red/pink bands, torn edge only on the photo's top */
+.passion-leadership-card {
+  flex: 0 0 210px;
+  height: 100%;
+  min-height: 200px;
+  padding: 40px 5px;
+  background: var(--p-border);
+  box-shadow: 6px 6px 0px var(--p-shadow-tint);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.passion-leadership-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(0, 0, 0, 0.15);
+}
+[data-theme='dark'] .passion-leadership-card:hover {
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(255, 255, 255, 0.15);
+}
+.passion-leadership-card__photo {
+  display: block;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Pulls the photo up into the card's top buffer (CARD_MAX_POKE from
+     jaggedClipPath.ts) so its clip-path can tear the top edge unevenly
+     instead of sitting flat beneath a static red mat. */
+  margin-top: -35px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #0a0a1a;
+  font: inherit;
+  overflow: hidden;
+}
+.passion-leadership-card__photo img,
+.passion-leadership-card__photo .passion-image-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border: none;
+  transition: transform 0.3s ease;
+}
+.passion-leadership-card__photo:hover img,
+.passion-leadership-card__photo:hover .passion-image-fallback {
+  transform: scale(1.08);
+}
+.passion-leadership-card__org-band {
+  background: var(--p-border);
+  color: #ffffff;
+  font-family: var(--p-font-heading);
+  font-size: 11px;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  text-align: center;
+}
+.passion-leadership-card__role-band {
   position: relative;
-  padding-left: 16px;
+  background: var(--p-bg);
+  color: var(--p-text);
+  font-family: var(--p-font-body);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  text-align: center;
 }
-.passion-leadership-card__achievements li::before {
-  content: '▪';
-  color: var(--p-border);
+.passion-leadership-card__role-flourish {
   position: absolute;
   left: 0;
+  right: 0;
+  /* 1px above role-band's true bottom, and 1px taller below, so it overlaps
+     the seam instead of sitting flush against it — flush positioning left a
+     sub-pixel gap on some viewports (card height doesn't always land on a
+     whole pixel), exposing the card's red background as a thin straight
+     line right under the role text. Same background color on both sides of
+     the seam, so the 1px overlap is invisible. */
+  top: calc(100% - 1px);
+  height: 36px;
+  background: var(--p-bg);
+  pointer-events: none;
 }
-/* Category tabs */
 .passion-tabs {
   display: flex;
   justify-content: center;
@@ -447,145 +601,550 @@ body.passion-fixed-lock {
   background: var(--p-border);
   color: #ffffff;
 }
-/* Creative work card */
-.passion-creative-card {
-  flex: 0 0 240px;
+.passion-creative-header {
+  align-self: center;
+  max-width: 90%;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
-.passion-creative-card__img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  border: 2px solid var(--p-border);
+.passion-creative-header__title {
+  padding: 12px 28px;
+}
+.passion-creative-header__title .passion-section__title {
+  margin: 0;
+}
+.passion-creative-header__tabs {
+  margin-top: 0;
+}
+.passion-creative-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  padding: 4px 24px 10px;
+  box-sizing: border-box;
+}
+.passion-creative-scroll::-webkit-scrollbar {
+  display: none;
+}
+.passion-creative-rows {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.passion-creative-row {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  gap: 8px;
+}
+.passion-creative-row--top {
+  align-items: flex-end;
+}
+.passion-creative-row--bottom {
+  align-items: flex-start;
+}
+.passion-creative-tile {
+  flex: 0 0 auto;
+  border: none;
+  padding: 5px;
+  background: var(--p-border);
+  box-shadow: 5px 5px 0px var(--p-shadow-tint);
+  cursor: pointer;
+  font: inherit;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.passion-creative-tile:hover {
+  transform: translateY(-6px);
+  box-shadow: 7px 7px 0px var(--p-shadow-tint-strong), 9px 9px 0px rgba(0, 0, 0, 0.15);
+}
+[data-theme='dark'] .passion-creative-tile:hover {
+  box-shadow: 7px 7px 0px var(--p-shadow-tint-strong), 9px 9px 0px rgba(255, 255, 255, 0.15);
+}
+.passion-creative-tile__img {
   display: block;
-  margin-bottom: 10px;
+  height: 100%;
+  width: auto;
+  max-width: 34vw;
+  object-fit: cover;
+  background: #0a0a1a;
+  transition: transform 0.3s ease;
 }
-.passion-image-fallback.passion-creative-card__img {
+.passion-image-fallback.passion-creative-tile__img {
+  aspect-ratio: 4 / 3;
+  width: auto;
+  max-width: 34vw;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--p-font-heading);
-  font-size: 28px;
+  font-size: 22px;
   background: var(--p-bg);
   color: var(--p-border);
 }
-.passion-creative-card__title {
-  font-size: 14px;
+.passion-creative-tile:hover .passion-creative-tile__img {
+  transform: scale(1.06);
 }
-.passion-creative-card__year {
-  font-family: var(--p-font-body);
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--p-sub);
-  margin-left: 6px;
-}
-.passion-creative-card__desc {
-  font-family: var(--p-font-body);
-  font-size: 12px;
-  color: var(--p-sub);
-  line-height: 1.5;
-  margin: 8px 0 0;
-}
-.passion-creative-card__link {
-  font-family: var(--p-font-body);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--p-border);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  margin-top: 10px;
-}
-/* Gallery card */
 .passion-gallery-card {
-  flex: 0 0 260px;
+  /* Sized from the row's height (not a fixed width) so the card always fits
+     its row's share of the section — regardless of viewport height —
+     instead of overflowing/clipping at a fixed size. */
+  flex: 0 0 auto;
+  height: 90%;
+  width: auto;
+  aspect-ratio: 9 / 10;
+  align-self: center;
+  cursor: pointer;
+  font: inherit;
+  overflow: hidden;
+  background: var(--p-border);
+  border: none;
+  padding: 14px;
+  box-sizing: border-box;
+  box-shadow: 6px 6px 0px var(--p-shadow-tint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* flex-start (not center): the photo stays 1:1 inside an 8:10 card, so
+     there's always leftover vertical space. Anchoring it to the top keeps
+     top/left/right padding visually equal and lets the leftover collect
+     only at the bottom. */
+  justify-content: flex-start;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.passion-gallery-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(0, 0, 0, 0.15);
+}
+[data-theme='dark'] .passion-gallery-card:hover {
+  box-shadow: 8px 8px 0px var(--p-shadow-tint-strong), 10px 10px 0px rgba(255, 255, 255, 0.15);
 }
 .passion-gallery-card__img {
   width: 100%;
-  aspect-ratio: 3 / 2;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  border: 2px solid var(--p-border);
   display: block;
+  background: #0a0a1a;
+  transition: transform 0.3s ease;
 }
 .passion-image-fallback.passion-gallery-card__img {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   font-family: var(--p-font-heading);
-  font-size: 28px;
+  font-size: 24px;
   background: var(--p-bg);
   color: var(--p-border);
 }
-.passion-gallery-card__caption {
-  font-family: var(--p-font-body);
-  font-size: 12px;
-  margin-top: 8px;
+.passion-gallery-card:hover .passion-gallery-card__img {
+  transform: scale(1.06);
 }
-.passion-gallery-card__context {
-  font-family: var(--p-font-body);
-  font-size: 11px;
-  color: var(--p-sub);
-  font-style: italic;
+/* ---------- Contact panel (reuses PassionFooter, background stripped) ---------- */
+.passion-contact-field {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  margin: 0 auto;
 }
-/* ---------- Contact panel (reuses footer-passion) ---------- */
 .passion-contact-panel.footer-passion {
+  background: transparent !important;
   border-top: none;
   border-bottom: none;
   margin-top: 0;
-  max-width: 900px;
+  padding: 0;
   width: 100%;
+  height: 100%;
+  max-width: none;
 }
-/* ---------- Floating bottom nav ---------- */
+.passion-contact-panel .footer-passion__container {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+}
+.passion-contact-panel .footer-passion__box {
+  position: absolute;
+  grid-column: auto !important;
+  justify-self: auto !important;
+  margin-top: 0 !important;
+  width: auto;
+  max-width: 260px;
+  opacity: 0;
+  transition: opacity 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
+}
+.passion-contact-panel .footer-passion__box--nav {
+  max-width: 360px;
+  width: max-content;
+}
+.passion-contact-field--ready .footer-passion__box {
+  opacity: 1;
+}
+.passion-contact-field .passion-loader {
+  position: absolute;
+  inset: 0;
+  flex: none;
+}
+/* ---------- The Void ---------- */
+.passion-void {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.passion-void__wrap {
+  display: inline-block;
+}
+.passion-void__text {
+  font-family: var(--p-font-heading);
+  font-size: clamp(32px, 6vw, 64px);
+  color: var(--p-border);
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: text-shadow 0.3s ease;
+}
+.passion-void__text:hover {
+  text-shadow: 0 0 18px var(--p-shadow-tint-strong);
+}
+/* ---------- Modal ----------
+   NOTE: this modal is rendered via createPortal directly into
+   document.body, so it sits OUTSIDE the .passion-page DOM subtree.
+   CSS custom properties defined on .passion-page (--p-border etc.)
+   do NOT inherit into it. All colors the modal needs are therefore
+   redeclared here, self-contained, on .passion-modal-overlay. */
+.passion-modal-overlay {
+  --pm-surface: #ffffff;
+  --pm-border: #dc2626;
+  --pm-shadow-strong: rgba(220, 38, 38, 0.4);
+  --pm-text: #ffffff;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+[data-theme='dark'] .passion-modal-overlay {
+  --pm-surface: #1c0e0e;
+  --pm-border: #ef4444;
+  --pm-shadow-strong: rgba(239, 68, 68, 0.4);
+  --pm-text: #000000;
+}
+.passion-modal-overlay--shown {
+  opacity: 1;
+}
+.passion-modal-card {
+  position: relative;
+  background: var(--pm-border);
+  border: 4px solid var(--pm-surface);
+  box-shadow: 10px 10px 0px var(--pm-shadow-strong);
+  max-width: min(920px, 94vw);
+  max-height: 88vh;
+  min-height: min(460px, 80vh);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 32px;
+  padding: 32px;
+  box-sizing: border-box;
+  transform: scale(0.92);
+  opacity: 0;
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+}
+.passion-modal-overlay--shown .passion-modal-card {
+  transform: scale(1);
+  opacity: 1;
+}
+.passion-modal-close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--pm-surface);
+  background: #0a0a0a;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.passion-modal-close:hover {
+  background: #2a2a2a;
+  transform: scale(1.1) rotate(90deg);
+}
+.passion-modal-card__image {
+  flex: 1 1 42%;
+  max-width: 42%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.passion-modal-card__image img,
+.passion-modal-card__image .passion-image-fallback {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+.passion-modal-card__image .passion-image-fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: var(--pm-surface);
+  color: var(--pm-border);
+}
+.passion-modal-card__content {
+  flex: 1 1 58%;
+  min-width: 0;
+  overflow-y: auto;
+  color: var(--pm-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+.passion-modal-card__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.passion-modal-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--pm-surface);
+  background: var(--pm-surface);
+  color: var(--pm-border);
+}
+.passion-modal-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.passion-modal-title {
+  font-size: 22px;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--pm-text);
+}
+.passion-modal-subtitle {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--p-font-heading);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--pm-surface);
+  color: var(--pm-border);
+  padding: 3px 10px;
+  align-self: flex-start;
+}
+.passion-modal-desc {
+  font-family: var(--p-font-body);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--pm-text);
+  opacity: 0.85;
+  margin: 18px 0 0;
+}
+.passion-modal-achievements {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.passion-modal-achievements li {
+  font-family: var(--p-font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--pm-text);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.passion-modal-achievements li::before {
+  content: '✓';
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--pm-border);
+  background: var(--pm-surface);
+}
+/* ---------- Floating bottom nav — arrows stretch to match center content ---------- */
 .passion-floating-nav {
   position: absolute;
   left: 50%;
-  bottom: 28px;
+  bottom: 24px;
   transform: translateX(-50%);
   z-index: 3;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: stretch;
   background: var(--p-surface);
   border: 3px solid var(--p-border);
   box-shadow: 5px 5px 0px var(--p-shadow-tint);
-  padding: 8px 12px;
+  overflow: hidden;
+}
+.passion-floating-nav__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  min-width: 130px;
+}
+@keyframes passionArrowGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0px var(--p-border));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 6px var(--p-border));
+    opacity: 0.7;
+  }
 }
 .passion-floating-nav__arrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  width: 52px;
   border: none;
   background: transparent;
   color: var(--p-border);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
 }
+.passion-floating-nav__arrow:first-child {
+  border-right: 2px solid var(--p-border);
+}
+.passion-floating-nav__arrow:last-child {
+  border-left: 2px solid var(--p-border);
+}
 .passion-floating-nav__arrow svg {
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
+}
+.passion-floating-nav__arrow:not(:disabled) svg {
+  animation: passionArrowGlow 1.8s ease-in-out infinite;
 }
 .passion-floating-nav__arrow:hover:not(:disabled) {
   background: var(--p-bg);
   transform: scale(1.06);
 }
+.passion-floating-nav__arrow:hover:not(:disabled) svg {
+  animation-play-state: paused;
+}
 .passion-floating-nav__arrow:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
+.passion-floating-nav__arrow:disabled svg {
+  animation: none;
+}
 .passion-floating-nav__label {
-  min-width: 120px;
   text-align: center;
   font-family: var(--p-font-heading);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  padding: 0 8px;
+  white-space: nowrap;
+}
+.passion-floating-nav__dots {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+.passion-floating-nav__dot {
+  width: 10px;
+  height: 4px;
+  background: var(--p-shadow-tint);
+  transition: background 0.2s ease, width 0.2s ease;
+}
+.passion-floating-nav__dot--active {
+  width: 20px;
+  background: var(--p-border);
+}
+.passion-scroll-progress {
+  position: absolute;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  width: min(60%, 420px);
+  height: 4px;
+  background: var(--p-shadow-tint);
+  z-index: 3;
+}
+.passion-scroll-progress__thumb {
+  position: absolute;
+  top: 50%;
+  width: 46px;
+  height: 8px;
+  background: var(--p-border);
+  transform: translate(-50%, -50%);
+}
+@media (max-width: 1024px) {
+  .passion-gallery-card {
+    padding: 15px;
+  }
+  .passion-gallery-rows {
+    gap: 10px;
+  }
+  .passion-gallery-row {
+    padding-top: 2px;
+    padding-bottom: 8px;
+  }
 }
 @media (max-width: 640px) {
   .passion-panel {
-    padding: 20px 20px 96px;
+    padding: 20px 20px 78px;
   }
   .passion-box--hero {
     flex-direction: column;
@@ -598,39 +1157,123 @@ body.passion-fixed-lock {
   .passion-hero__greeting {
     font-size: 22px;
   }
-  .passion-floating-nav {
-    gap: 6px;
-    padding: 6px 8px;
-    bottom: 20px;
+  .passion-floating-nav__center {
+    padding: 6px 14px;
+    min-width: 100px;
   }
   .passion-floating-nav__arrow {
-    width: 48px;
-    height: 48px;
+    width: 40px;
   }
   .passion-floating-nav__arrow svg {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
   }
   .passion-floating-nav__label {
-    min-width: 90px;
     font-size: 11px;
   }
-  .passion-creative-card,
+  .passion-leadership-card {
+    flex-basis: 165px;
+  }
+  .passion-scroll-h--bleed {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .passion-creative-header__title {
+    padding: 10px 20px;
+  }
+  .passion-creative-rows {
+    gap: 6px;
+  }
+  .passion-creative-row {
+    gap: 6px;
+  }
+  .passion-creative-tile {
+    padding: 4px;
+  }
+  .passion-creative-tile__img,
+  .passion-image-fallback.passion-creative-tile__img {
+    max-width: 55vw;
+  }
   .passion-gallery-card {
-    flex-basis: 200px;
+    padding: 11px;
+  }
+  .passion-gallery-rows {
+    gap: 8px;
+  }
+  .passion-scroll-progress {
+    bottom: 78px;
+    width: 80%;
+  }
+  .passion-contact-panel .footer-passion__box {
+    max-width: 220px;
+  }
+  .passion-contact-panel .footer-passion__box--nav {
+    max-width: 300px;
+  }
+  .passion-modal-card {
+    flex-direction: column;
+    padding: 22px;
+    gap: 20px;
+    max-height: 92vh;
+    min-height: 0;
+  }
+  .passion-modal-card__image {
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+  .passion-modal-card__image img,
+  .passion-modal-card__image .passion-image-fallback {
+    max-height: 34vh;
+  }
+  .passion-modal-card__content {
+    justify-content: flex-start;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .passion-panel--exiting,
-  .passion-panel--entering,
+  .passion-page--shaking,
+  .passion-panel--exiting-fwd,
+  .passion-panel--exiting-back,
+  .passion-panel--entering-fwd,
+  .passion-panel--entering-back,
   .passion-dust__group--rush-fwd,
   .passion-dust__group--rush-back,
   .passion-dust__group--settle-fwd,
   .passion-dust__group--settle-back,
-  .passion-dust__dot {
+  .passion-dust__dot,
+  .passion-floating-nav__arrow svg {
     animation: none;
   }
-  .passion-box {
+  .passion-box,
+  .passion-leadership-card,
+  .passion-creative-tile,
+  .passion-panel.passion-scatter-active .passion-scatterable,
+  .passion-modal-overlay,
+  .passion-modal-card,
+  .passion-contact-panel .footer-passion__box {
     transition: none;
   }
+}
+.passion-loader {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--p-bg);
+}
+.passion-loader__ring {
+  width: 200px;
+  height: 200px;
+}
+.passion-loader__track {
+  fill: none;
+  stroke: var(--p-shadow-tint);
+  stroke-width: 16px;
+}
+.passion-loader__progress {
+  fill: none;
+  stroke: var(--p-border);
+  stroke-width: 16px;
+  stroke-linecap: square;
+  transition: stroke-dashoffset 0.15s ease-out;
 }

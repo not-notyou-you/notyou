@@ -5,7 +5,7 @@ interface IdentityImageProps {
   src: string | null | undefined
   alt: string
   initials: string
-  size?: 'lg' | 'card'
+  size?: 'lg' | 'card' | 'modal'
   className?: string
 }
 

@@ -1,48 +1,62 @@
 // src/pages/public/identity/components/EducationCard.tsx
 import { useState } from 'react'
 import { IdentityImage } from './IdentityImage'
-import { PhotoModal } from './PhotoModal'
+import { DetailModal } from './DetailModal'
 import { getOrgInitials } from '@/lib/initials'
 import type { Education } from '@/types'
 
 export function EducationCard({ item }: { item: Education }) {
-  const [expanded, setExpanded] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
   const dateRange = `${item.start_year ?? '—'} - ${item.end_year ?? 'Present'}`
   const degreeField = [item.degree, item.field].filter(Boolean).join(' · ')
   const photoUrl = item.image_url
+  const logoUrl = item.logo_url
 
   return (
-    <article className={`identity-card${expanded ? ' identity-card--expanded' : ''}`}>
-      <div className="identity-card__photo" onClick={() => photoUrl && setModalOpen(true)}>
-        <IdentityImage src={photoUrl} alt={`${item.institution} photo`} initials={getOrgInitials(item.institution)} size="card" />
-      </div>
-      <div
-        className="identity-card__body"
+    <>
+      <article
+        className="identity-card"
         role="button"
         tabIndex={0}
-        onClick={() => setExpanded((v) => !v)}
+        aria-label={`View details for ${item.institution}`}
+        onClick={() => setDetailOpen(true)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
-            setExpanded((v) => !v)
+            setDetailOpen(true)
           }
         }}
       >
-        <div className="identity-card__heading">
-          <h3 className="identity-card__title">{item.institution}</h3>
-          <span className="identity-card__toggle" aria-hidden="true" />
+        <div className="identity-card__photo">
+          <IdentityImage src={photoUrl} alt={`${item.institution} photo`} initials={getOrgInitials(item.institution)} size="card" />
+          {logoUrl && (
+            <div className="identity-card__badge">
+              <img src={logoUrl} alt={`${item.institution} logo`} />
+            </div>
+          )}
         </div>
-        {degreeField && <div className="identity-card__meta">{degreeField}</div>}
-        <div className="identity-card__subheader">{dateRange}</div>
-        {expanded && item.details && (
-          <div className="identity-card__expand" onClick={(e) => e.stopPropagation()}>
-            <div className="identity-card__divider" />
-            <p className="identity-card__details">{item.details}</p>
+        <div className="identity-card__body">
+          <div className="identity-card__heading">
+            <h3 className="identity-card__title">{item.institution}</h3>
           </div>
-        )}
-      </div>
-      {modalOpen && photoUrl && <PhotoModal src={photoUrl} alt={`${item.institution} photo`} onClose={() => setModalOpen(false)} />}
-    </article>
+          {degreeField && <div className="identity-card__meta">{degreeField}</div>}
+          <div className="identity-card__subheader">{dateRange}</div>
+        </div>
+      </article>
+      {detailOpen && (
+        <DetailModal
+          photoSrc={photoUrl}
+          photoAlt={`${item.institution} photo`}
+          photoInitials={getOrgInitials(item.institution)}
+          badgeSrc={logoUrl}
+          badgeAlt={`${item.institution} logo`}
+          title={item.institution}
+          subtitle={degreeField}
+          metaLines={[dateRange]}
+          description={item.details}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
+    </>
   )
 }

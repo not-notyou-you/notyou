@@ -5,11 +5,20 @@ interface ImageOrInitialsProps {
   alt: string
   initials: string
   className?: string
+  onLoad?: (img: HTMLImageElement) => void
 }
-export function ImageOrInitials({ src, alt, initials, className }: ImageOrInitialsProps) {
+export function ImageOrInitials({ src, alt, initials, className, onLoad }: ImageOrInitialsProps) {
   const [failed, setFailed] = useState(false)
   if (!src || failed) {
     return <div className={`passion-image-fallback ${className ?? ''}`}>{initials}</div>
   }
-  return <img src={src} alt={alt} className={className} onError={() => setFailed(true)} />
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setFailed(true)}
+      onLoad={(e) => onLoad?.(e.currentTarget)}
+    />
+  )
 }

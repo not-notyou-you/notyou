@@ -1,12 +1,8 @@
-// Types mirror the tables defined in sql/schema.sql 1:1.
-// Keeping them hand-written (rather than generated) so the admin panel
-// has zero extra build steps — regenerate manually if the schema changes.
-
+// src/types/index.ts
 export type PageSlug = 'identity' | 'intellect' | 'passion'
 export type LanguageLevel = 'Native' | 'Fluent' | 'Intermediate' | 'Beginner'
 export type SkillCategory = 'Programming Languages' | 'Frameworks' | 'Tools'
 export type CreativeCategory = 'digital' | 'traditional' | 'stickers'
-
 export interface Profile {
   id: string
   name: string
@@ -18,7 +14,6 @@ export interface Profile {
   photo_url: string | null
   updated_at: string
 }
-
 export interface Social {
   id: string
   platform: string
@@ -27,7 +22,6 @@ export interface Social {
   is_visible: boolean
   created_at: string
 }
-
 export interface Education {
   id: string
   institution: string
@@ -39,12 +33,12 @@ export interface Education {
   honors: string | null
   details: string | null
   image_url: string | null
+  logo_url: string | null
   position: number
   is_visible: boolean
   created_at: string
   updated_at: string
 }
-
 export interface Experience {
   id: string
   company: string
@@ -56,12 +50,12 @@ export interface Experience {
   description: string | null
   institution_details: string | null
   logo_url: string | null
+  image_url: string | null
   position_order: number
   is_visible: boolean
   created_at: string
   updated_at: string
 }
-
 export interface Language {
   id: string
   name: string
@@ -70,7 +64,6 @@ export interface Language {
   is_visible: boolean
   created_at: string
 }
-
 export interface PageContent {
   id: string
   page_slug: PageSlug
@@ -82,7 +75,6 @@ export interface PageContent {
   is_published: boolean
   updated_at: string
 }
-
 export interface Project {
   id: string
   title: string
@@ -101,11 +93,9 @@ export interface Project {
   created_at: string
   updated_at: string
 }
-
 export interface ProjectWithTech extends Project {
   technologies: string[]
 }
-
 export interface ProjectTechnology {
   id: string
   project_id: string
@@ -113,7 +103,6 @@ export interface ProjectTechnology {
   position: number
   created_at: string
 }
-
 export interface Skill {
   id: string
   category: SkillCategory
@@ -123,7 +112,6 @@ export interface Skill {
   is_visible: boolean
   created_at: string
 }
-
 export interface Certification {
   id: string
   title: string
@@ -137,7 +125,6 @@ export interface Certification {
   created_at: string
   updated_at: string
 }
-
 export interface AcademicProject {
   id: string
   title: string
@@ -151,7 +138,6 @@ export interface AcademicProject {
   created_at: string
   updated_at: string
 }
-
 export interface Leadership {
   id: string
   organization: string
@@ -162,12 +148,12 @@ export interface Leadership {
   description: string
   achievements: string[] | null
   icon_type: string | null
+  image_url: string | null
   position_order: number
   is_visible: boolean
   created_at: string
   updated_at: string
 }
-
 export interface CreativeWork {
   id: string
   title: string
@@ -181,7 +167,6 @@ export interface CreativeWork {
   created_at: string
   updated_at: string
 }
-
 export interface CarouselPhoto {
   id: string
   image_url: string

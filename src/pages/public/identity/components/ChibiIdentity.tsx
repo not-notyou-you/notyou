@@ -54,6 +54,8 @@ const SPRITE_URLS: Record<string, string> = {
   'glitch6.webp': glitch6,
 }
 
+export const CHIBI_IMAGE_URLS = Object.values(SPRITE_URLS)
+
 const FLOAT_H = 100
 const PUSH = 0.9
 const CHASE = 2.6

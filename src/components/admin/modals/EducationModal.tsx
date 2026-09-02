@@ -1,3 +1,4 @@
+// src/components/admin/modals/EducationModal.tsx
 import { useEffect, useState } from 'react'
 import { Modal } from '@/components/admin/Modal'
 import { FormInput } from '@/components/admin/FormInput'
@@ -5,7 +6,6 @@ import { ImageUpload } from '@/components/admin/ImageUpload'
 import { ToggleSwitch } from '@/components/common/ToggleSwitch'
 import { Button } from '@/components/common/Button'
 import type { Education } from '@/types'
-
 interface EducationModalProps {
   isOpen: boolean
   onClose: () => void
@@ -13,7 +13,6 @@ interface EducationModalProps {
   onCreate: (payload: Partial<Education>) => Promise<unknown>
   onUpdate: (id: string, payload: Partial<Education>) => Promise<unknown>
 }
-
 const emptyForm = {
   institution: '',
   degree: '',
@@ -24,16 +23,15 @@ const emptyForm = {
   honors: '',
   details: '',
   image_url: '',
+  logo_url: '',
   position: '0',
   is_visible: true,
 }
-
 export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdate }: EducationModalProps) {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-
   useEffect(() => {
     if (!isOpen) return
     if (initialData) {
@@ -47,6 +45,7 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
         honors: initialData.honors || '',
         details: initialData.details || '',
         image_url: initialData.image_url || '',
+        logo_url: initialData.logo_url || '',
         position: initialData.position?.toString() || '0',
         is_visible: initialData.is_visible,
       })
@@ -56,7 +55,6 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
     setErrors({})
     setSubmitError(null)
   }, [isOpen, initialData])
-
   const validate = () => {
     const next: Record<string, string> = {}
     if (!form.institution.trim()) next.institution = 'Institution is required.'
@@ -65,7 +63,6 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
     setErrors(next)
     return Object.keys(next).length === 0
   }
-
   const handleSubmit = async () => {
     if (!validate()) return
     setSaving(true)
@@ -81,6 +78,7 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
         honors: form.honors.trim() || null,
         details: form.details.trim() || null,
         image_url: form.image_url.trim() || null,
+        logo_url: form.logo_url.trim() || null,
         position: Number(form.position) || 0,
         is_visible: form.is_visible,
       }
@@ -96,7 +94,6 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
       setSaving(false)
     }
   }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -178,6 +175,12 @@ export function EducationModal({ isOpen, onClose, initialData, onCreate, onUpdat
         section="identity"
         currentImage={form.image_url || null}
         onUpload={(url) => setForm((f) => ({ ...f, image_url: url }))}
+      />
+      <ImageUpload
+        label="Institution logo"
+        section="identity"
+        currentImage={form.logo_url || null}
+        onUpload={(url) => setForm((f) => ({ ...f, logo_url: url }))}
       />
       <FormInput
         label="Sort order"

@@ -1,10 +1,11 @@
+// src/components/admin/modals/LeadershipModal.tsx
 import { useEffect, useState } from 'react'
 import { Modal } from '@/components/admin/Modal'
 import { FormInput } from '@/components/admin/FormInput'
+import { ImageUpload } from '@/components/admin/ImageUpload'
 import { ToggleSwitch } from '@/components/common/ToggleSwitch'
 import { Button } from '@/components/common/Button'
 import type { Leadership } from '@/types'
-
 interface LeadershipModalProps {
   isOpen: boolean
   onClose: () => void
@@ -12,7 +13,6 @@ interface LeadershipModalProps {
   onCreate: (payload: Partial<Leadership>) => Promise<unknown>
   onUpdate: (id: string, payload: Partial<Leadership>) => Promise<unknown>
 }
-
 const ICON_OPTIONS = [
   'Award',
   'Users',
@@ -25,7 +25,6 @@ const ICON_OPTIONS = [
   'Star',
   'Flag',
 ].map((v) => ({ value: v, label: v }))
-
 const emptyForm = {
   organization: '',
   position: '',
@@ -35,16 +34,15 @@ const emptyForm = {
   end_date: '',
   achievements: '',
   icon_type: '',
+  image_url: '',
   position_order: '0',
   is_visible: true,
 }
-
 export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpdate }: LeadershipModalProps) {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-
   useEffect(() => {
     if (!isOpen) return
     if (initialData) {
@@ -57,6 +55,7 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
         end_date: initialData.end_date || '',
         achievements: (initialData.achievements || []).join('\n'),
         icon_type: initialData.icon_type || '',
+        image_url: initialData.image_url || '',
         position_order: initialData.position_order?.toString() || '0',
         is_visible: initialData.is_visible,
       })
@@ -66,7 +65,6 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
     setErrors({})
     setSubmitError(null)
   }, [isOpen, initialData])
-
   const validate = () => {
     const next: Record<string, string> = {}
     if (!form.organization.trim()) next.organization = 'Organization is required.'
@@ -75,7 +73,6 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
     setErrors(next)
     return Object.keys(next).length === 0
   }
-
   const handleSubmit = async () => {
     if (!validate()) return
     setSaving(true)
@@ -94,6 +91,7 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
         end_date: form.end_date.trim() || null,
         achievements: achievementsList.length ? achievementsList : null,
         icon_type: form.icon_type || null,
+        image_url: form.image_url.trim() || null,
         position_order: Number(form.position_order) || 0,
         is_visible: form.is_visible,
       }
@@ -109,7 +107,6 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
       setSaving(false)
     }
   }
-
   return (
     <Modal
       isOpen={isOpen}
@@ -182,6 +179,12 @@ export function LeadershipModal({ isOpen, onClose, initialData, onCreate, onUpda
         placeholder="One per line"
         value={form.achievements}
         onChange={(v) => setForm((f) => ({ ...f, achievements: v }))}
+      />
+      <ImageUpload
+        label="Committee / event photo"
+        section="passion"
+        currentImage={form.image_url || null}
+        onUpload={(url) => setForm((f) => ({ ...f, image_url: url }))}
       />
       <div className="form-row">
         <FormInput

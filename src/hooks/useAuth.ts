@@ -1,43 +1,25 @@
 import { useEffect, useState } from 'react'
-import type { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
-import { adminLogin, adminLogout } from '@/lib/auth'
+import { adminLogin, adminLogout, getCurrentSession, type AdminSession } from '@/lib/auth'
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<AdminSession | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    let mounted = true
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted) {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    })
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => {
-      mounted = false
-      listener.subscription.unsubscribe()
-    }
+    setSession(getCurrentSession())
+    setLoading(false)
   }, [])
 
-  const login = async (email: string, password: string) => {
-    const result = await adminLogin(email, password)
-    setUser(result.user)
+  const login = async (username: string, password: string) => {
+    const result = await adminLogin(username, password)
+    setSession(result)
     return result
   }
 
-  const logout = async () => {
-    await adminLogout()
-    setUser(null)
+  const logout = () => {
+    adminLogout()
+    setSession(null)
   }
 
-  return { user, loading, isAuthenticated: !!user, login, logout }
+  return { user: session, loading, isAuthenticated: !!session, login, logout }
 }

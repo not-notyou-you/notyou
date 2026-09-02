@@ -1,6 +1,6 @@
 // src/hooks/useFooterData.ts
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useMemo } from 'react';
+import { usePublicData } from '@/contexts/PublicDataContext';
 import type { ProfileData, SocialLink } from '@/types/header-footer.types';
 
 interface UseFooterDataReturn {
@@ -10,49 +10,37 @@ interface UseFooterDataReturn {
   error: string | null;
 }
 
+/**
+ * Reads profile + socials from PublicDataProvider (fetched once for the whole
+ * public site) instead of firing its own Supabase query — footers mount and
+ * unmount repeatedly (e.g. every Passion panel switch) and must not refetch.
+ * Mapped profile/socials are memoized so consumers get stable references
+ * across re-renders (effects keyed on them would otherwise loop forever).
+ */
 export function useFooterData(): UseFooterDataReturn {
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [socials, setSocials] = useState<SocialLink[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { profile, socials, loading } = usePublicData();
 
-  useEffect(() => {
-    let isMounted = true;
+  const mappedProfile = useMemo<ProfileData | null>(
+    () =>
+      profile
+        ? {
+            name: profile.name,
+            location: profile.location ?? '',
+            email: profile.email ?? '',
+            phone: profile.phone,
+          }
+        : null,
+    [profile]
+  );
 
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [profileRes, socialsRes] = await Promise.all([
-          supabase.from('profile').select('name, location, email, phone').single(),
-          supabase
-            .from('socials')
-            .select('platform, url, position')
-            .eq('is_visible', true)
-            .order('position', { ascending: true }),
-        ]);
+  const mappedSocials = useMemo<SocialLink[]>(
+    () =>
+      socials
+        .filter((social) => social.is_visible && social.url)
+        .sort((a, b) => a.position - b.position)
+        .map((social) => ({ platform: social.platform, url: social.url as string, position: social.position })),
+    [socials]
+  );
 
-        if (profileRes.error) throw profileRes.error;
-        if (socialsRes.error) throw socialsRes.error;
-
-        if (isMounted) {
-          setProfile(profileRes.data as ProfileData);
-          setSocials((socialsRes.data ?? []) as SocialLink[]);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load footer data');
-        }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    fetchData();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { profile, socials, loading, error };
+  return { profile: mappedProfile, socials: mappedSocials, loading, error: null };
 }

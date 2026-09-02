@@ -8,7 +8,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner'
 export function LoginPage() {
   const { login, isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -21,10 +21,10 @@ export function LoginPage() {
     setError(null)
     setSubmitting(true)
     try {
-      await login(email.trim(), password)
+      await login(username.trim(), password)
       navigate('/admin/management', { replace: true })
     } catch (err) {
-      setError('Email or password is incorrect.')
+      setError('Username or password is incorrect.')
     } finally {
       setSubmitting(false)
     }
@@ -37,12 +37,12 @@ export function LoginPage() {
         <p>Manage the Identity, Intellect, and Passion pages.</p>
         {error && <div className="modal-error">{error}</div>}
         <FormInput
-          label="Email"
-          name="email"
-          type="email"
+          label="Username"
+          name="username"
+          type="text"
           required
-          value={email}
-          onChange={setEmail}
+          value={username}
+          onChange={setUsername}
         />
         <FormInput
           label="Password"

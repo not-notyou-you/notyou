@@ -25,6 +25,7 @@ const FAR_HALF_WIDTH = 0.4
 const NEAR_OPACITY = 0.55
 const FAR_OPACITY = 0.02
 const WAVE_COMPONENTS = 5
+const SHOCK_MS = 900
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 }
@@ -86,6 +87,35 @@ function buildPulseSpine(
   points.push(portalCorner)
   return points
 }
+function buildShockSpine(
+  corner: Point,
+  portalCorner: Point,
+  maxAmp: number,
+  progress: number,
+  components: WaveComponent[]
+): Point[] {
+  const dx = portalCorner.x - corner.x
+  const dy = portalCorner.y - corner.y
+  const len = Math.hypot(dx, dy) || 1
+  const perpX = -dy / len
+  const perpY = dx / len
+  const decay = 1 - progress
+  const points: Point[] = [corner]
+  for (let i = 1; i <= INTERIOR_POINTS; i++) {
+    const t = i / (INTERIOR_POINTS + 1)
+    const baseX = corner.x + dx * t
+    const baseY = corner.y + dy * t
+    let sum = 0
+    for (const c of components) {
+      const envelope = Math.sin(Math.PI * t)
+      sum += c.ampScale * envelope * Math.sin(t * c.cycles * Math.PI * 2 + c.phase + progress * 8)
+    }
+    const offset = (maxAmp * decay * sum) / Math.sqrt(WAVE_COMPONENTS)
+    points.push({ x: baseX + perpX * offset, y: baseY + perpY * offset })
+  }
+  points.push(portalCorner)
+  return points
+}
 function ribbonPath(spine: Point[]): string {
   const n = spine.length
   const left: Point[] = []
@@ -127,10 +157,12 @@ export function PassionTunnelBackground({
   phase,
   direction,
   exitDurationMs,
+  shockKey,
 }: {
   phase: Phase
   direction: 1 | -1
   exitDurationMs: number
+  shockKey: number
 }) {
   const svgRef = useRef<SVGSVGElement>(null)
   const pathRefs = useRef<Array<SVGPathElement | null>>([])
@@ -138,6 +170,7 @@ export function PassionTunnelBackground({
   const beamsRef = useRef<BeamDef[]>([])
   const rafRef = useRef(0)
   const prevPhaseRef = useRef<Phase>('idle')
+  const shockMountRef = useRef(0)
   const [portalRect, setPortalRect] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const applyPaths = (spines: Point[][]) => {
     spines.forEach((spine, i) => {
@@ -203,6 +236,23 @@ export function PassionTunnelBackground({
     }
     rafRef.current = requestAnimationFrame(step)
   }, [phase, direction, exitDurationMs])
+  useEffect(() => {
+    shockMountRef.current += 1
+    if (shockMountRef.current === 1) return
+    if (prefersReducedMotion()) return
+    const beamComponents: WaveComponent[][] = beamsRef.current.map(() => generateWaveComponents())
+    const maxAmp = Math.min(dimsRef.current.width, dimsRef.current.height) * 0.05
+    const start = performance.now()
+    cancelAnimationFrame(rafRef.current)
+    const step = (t: number) => {
+      const progress = Math.min(1, (t - start) / SHOCK_MS)
+      const spines = beamsRef.current.map((b, i) => buildShockSpine(b.corner, b.portalCorner, maxAmp, progress, beamComponents[i]))
+      applyPaths(spines)
+      if (progress < 1) rafRef.current = requestAnimationFrame(step)
+      else applyStraight()
+    }
+    rafRef.current = requestAnimationFrame(step)
+  }, [shockKey])
   return (
     <div className="passion-wave-bg" aria-hidden="true">
       <svg ref={svgRef} preserveAspectRatio="none">

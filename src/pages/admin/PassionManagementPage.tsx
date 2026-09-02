@@ -1,3 +1,4 @@
+// src/pages/admin/PassionManagementPage.tsx
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { AdminLayout } from '@/components/admin/AdminLayout'
@@ -13,24 +14,20 @@ import { CarouselPhotoModal } from '@/components/admin/modals/CarouselPhotoModal
 import { usePageContent } from '@/hooks/usePageContent'
 import { useSupabaseTable } from '@/hooks/useSupabaseTable'
 import type { CarouselPhoto, CreativeCategory, CreativeWork, Leadership } from '@/types'
-
 type DeleteTarget =
   | { type: 'leadership'; id: string; label: string }
   | { type: 'creative'; id: string; label: string }
   | { type: 'photo'; id: string; label: string }
-
 const CREATIVE_CATEGORIES: { value: CreativeCategory; label: string }[] = [
   { value: 'digital', label: 'Digital' },
   { value: 'traditional', label: 'Traditional' },
   { value: 'stickers', label: 'Stickers' },
 ]
-
 export function PassionManagementPage() {
   const pageContent = usePageContent('passion')
   const leadership = useSupabaseTable<Leadership>('leadership', { column: 'position_order' })
   const creativeWorks = useSupabaseTable<CreativeWork>('creative_works')
   const carouselPhotos = useSupabaseTable<CarouselPhoto>('carousel_photos')
-
   const [pageContentModalOpen, setPageContentModalOpen] = useState(false)
   const [leadershipModal, setLeadershipModal] = useState<{ open: boolean; data: Leadership | null }>({
     open: false,
@@ -47,7 +44,6 @@ export function PassionManagementPage() {
   })
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
   const [deleting, setDeleting] = useState(false)
-
   const handleDelete = async () => {
     if (!deleteTarget) return
     setDeleting(true)
@@ -63,14 +59,17 @@ export function PassionManagementPage() {
       setDeleting(false)
     }
   }
-
   const leadershipColumns: DataTableColumn<Leadership>[] = [
+    {
+      key: 'image_url',
+      label: 'Photo',
+      render: (v) => <ImageWithFallback src={v as string} section="passion" alt="" className="table-thumb" />,
+    },
     { key: 'organization', label: 'Organization' },
     { key: 'position', label: 'Role' },
     { key: 'period', label: 'Period', render: (v) => (v ? String(v) : '—') },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   const creativeColumns: DataTableColumn<CreativeWork>[] = [
     {
       key: 'image_url',
@@ -81,7 +80,6 @@ export function PassionManagementPage() {
     { key: 'year', label: 'Year', render: (v) => (v ? String(v) : '—') },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   const photoColumns: DataTableColumn<CarouselPhoto>[] = [
     {
       key: 'image_url',
@@ -92,10 +90,8 @@ export function PassionManagementPage() {
     { key: 'event_or_context', label: 'Context', render: (v) => (v ? String(v) : '—') },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   return (
     <AdminLayout title="Passion Management" backTo="/admin/management" section="passion">
-      {/* Page content */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Quote & Subtitle</h2>
@@ -122,8 +118,6 @@ export function PassionManagementPage() {
           </div>
         </div>
       </div>
-
-      {/* Leadership */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Leadership & Committees</h2>
@@ -142,8 +136,6 @@ export function PassionManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'leadership', id: row.id, label: row.organization })}
         />
       </div>
-
-      {/* Creative works, grouped by category */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Creative Works</h2>
@@ -174,8 +166,6 @@ export function PassionManagementPage() {
           </div>
         ))}
       </div>
-
-      {/* Carousel photos */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Carousel Photos</h2>
@@ -194,7 +184,6 @@ export function PassionManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'photo', id: row.id, label: row.caption || 'this photo' })}
         />
       </div>
-
       <PageContentModal
         isOpen={pageContentModalOpen}
         onClose={() => setPageContentModalOpen(false)}

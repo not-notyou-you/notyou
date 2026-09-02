@@ -1,3 +1,4 @@
+// src/pages/admin/IdentityManagementPage.tsx
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { AdminLayout } from '@/components/admin/AdminLayout'
@@ -14,20 +15,17 @@ import { SocialModal } from '@/components/admin/modals/SocialModal'
 import { useSupabaseTable } from '@/hooks/useSupabaseTable'
 import { useProfile } from '@/hooks/useProfile'
 import type { Education, Experience, Language, Social } from '@/types'
-
 type DeleteTarget =
   | { type: 'education'; id: string; label: string }
   | { type: 'experience'; id: string; label: string }
   | { type: 'language'; id: string; label: string }
   | { type: 'social'; id: string; label: string }
-
 export function IdentityManagementPage() {
   const profile = useProfile()
   const socials = useSupabaseTable<Social>('socials')
   const education = useSupabaseTable<Education>('education')
   const experience = useSupabaseTable<Experience>('experience', { column: 'position_order' })
   const languages = useSupabaseTable<Language>('languages')
-
   const [profileModalOpen, setProfileModalOpen] = useState(false)
   const [socialModal, setSocialModal] = useState<{ open: boolean; data: Social | null }>({
     open: false,
@@ -47,7 +45,6 @@ export function IdentityManagementPage() {
   })
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
   const [deleting, setDeleting] = useState(false)
-
   const handleDelete = async () => {
     if (!deleteTarget) return
     setDeleting(true)
@@ -64,11 +61,15 @@ export function IdentityManagementPage() {
       setDeleting(false)
     }
   }
-
   const educationColumns: DataTableColumn<Education>[] = [
     {
       key: 'image_url',
       label: 'Photo',
+      render: (v) => <ImageWithFallback src={v as string} section="identity" alt="" className="table-thumb" />,
+    },
+    {
+      key: 'logo_url',
+      label: 'Logo',
       render: (v) => <ImageWithFallback src={v as string} section="identity" alt="" className="table-thumb" />,
     },
     { key: 'institution', label: 'Institution' },
@@ -81,11 +82,15 @@ export function IdentityManagementPage() {
     },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   const experienceColumns: DataTableColumn<Experience>[] = [
     {
       key: 'logo_url',
       label: 'Logo',
+      render: (v) => <ImageWithFallback src={v as string} section="identity" alt="" className="table-thumb" />,
+    },
+    {
+      key: 'image_url',
+      label: 'Photo',
       render: (v) => <ImageWithFallback src={v as string} section="identity" alt="" className="table-thumb" />,
     },
     { key: 'company', label: 'Company' },
@@ -93,22 +98,18 @@ export function IdentityManagementPage() {
     { key: 'duration', label: 'Duration' },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   const languageColumns: DataTableColumn<Language>[] = [
     { key: 'name', label: 'Language' },
     { key: 'level', label: 'Level' },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   const socialColumns: DataTableColumn<Social>[] = [
     { key: 'platform', label: 'Platform' },
     { key: 'url', label: 'URL', render: (v) => (v ? String(v) : '—') },
     { key: 'is_visible', label: 'Status', render: (v) => <VisibilityPill visible={v as boolean} /> },
   ]
-
   return (
     <AdminLayout title="Identity Management" backTo="/admin/management" section="identity">
-      {/* Profile & Socials */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Profile & Contact</h2>
@@ -146,8 +147,6 @@ export function IdentityManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'social', id: row.id, label: row.platform })}
         />
       </div>
-
-      {/* Education */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Education</h2>
@@ -166,8 +165,6 @@ export function IdentityManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'education', id: row.id, label: row.institution })}
         />
       </div>
-
-      {/* Experience */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Experience</h2>
@@ -186,8 +183,6 @@ export function IdentityManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'experience', id: row.id, label: row.company })}
         />
       </div>
-
-      {/* Languages */}
       <div className="section-block">
         <div className="section-block__header">
           <h2 className="section-block__title">Languages</h2>
@@ -206,7 +201,6 @@ export function IdentityManagementPage() {
           onDelete={(row) => setDeleteTarget({ type: 'language', id: row.id, label: row.name })}
         />
       </div>
-
       <ProfileModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}

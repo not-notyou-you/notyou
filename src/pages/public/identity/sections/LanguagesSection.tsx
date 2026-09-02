@@ -5,9 +5,9 @@ import type { Language } from '@/types'
 export function LanguagesSection({ items, loading }: { items: Language[]; loading: boolean }) {
   if (loading || items.length === 0) return null
   return (
-    <section className="identity-section" aria-labelledby="languages-title">
-      <div className="identity-section__title-sticky">
-        <h2 id="languages-title" className="identity-section__title">
+    <section className="identity-section identity-section--gallery" aria-labelledby="languages-title">
+      <div className="identity-section__title-rail">
+        <h2 id="languages-title" className="identity-section__title identity-section__title--side">
           Languages
         </h2>
       </div>
